@@ -17,6 +17,7 @@ import { useRef, useState } from "react";
 import usePreviewImgs from "../hooks/usePreviewImgs";
 export default function UpdateProfilePage() {
   const [user, setUser] = useRecoilState(userAtom);
+
   const [inputs, setInputs] = useState({
     name: user.name,
     username: user.username,
@@ -44,6 +45,13 @@ export default function UpdateProfilePage() {
       const data = await res.json(); // updated user object
       if (data.error) {
         console.log(data.error);
+        toast({
+          title: "Error",
+          description: data.error,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
         return;
       }
       toast({
@@ -56,6 +64,13 @@ export default function UpdateProfilePage() {
       setUser(data);
       localStorage.setItem("user-threads", JSON.stringify(data));
     } catch (error) {
+      toast({
+        title: "Error",
+        description: error,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
       console.log(error);
     } finally {
       setUpdating(false);

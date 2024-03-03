@@ -59,7 +59,21 @@ export default function SignupCard() {
       }
       localStorage.setItem("user-threads", JSON.stringify(data));
       setUser(data);
+      toast({
+        title: "Sign Up ",
+        description: "successful",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
+      toast({
+        title: "Error",
+        description: err,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
       console.log(err);
     }
   };

@@ -18,12 +18,15 @@ import {
   useColorMode,
   useColorModeValue,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import usePreviewImgs from "../hooks/usePreviewImgs";
 import { BsFillImageFill } from "react-icons/bs";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
+import postsAtom from "../atoms/postsAtom";
+import { useParams } from "react-router-dom";
 
 const MAX_CHAR = 500;
 const CreatePost = () => {
@@ -34,6 +37,10 @@ const CreatePost = () => {
   const user = useRecoilValue(userAtom);
   const [loading, setLoading] = useState(false);
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
+  const [posts, setPosts] = useRecoilState(postsAtom);
+  const { username } = useParams();
+  const toast = useToast();
+
   const handleTextChange = (e) => {
     const inputText = e.target.value;
 
@@ -69,11 +76,30 @@ const CreatePost = () => {
         console.log(data.error);
         return;
       }
+
+      toast({
+        title: "post added ",
+        description: "succesfull",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
       console.log("success");
+
+      if (username === user.username) {
+        setPosts([data, ...posts]);
+      }
       onClose();
       setPostText("");
       setImgUrl("");
     } catch (err) {
+      toast({
+        title: "Error",
+        description: err,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
       console.log(err);
     } finally {
       setLoading(false);

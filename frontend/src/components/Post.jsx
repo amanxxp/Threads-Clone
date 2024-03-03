@@ -1,4 +1,4 @@
-import { Avatar, Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Image, Text, useToast } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 
 import Actions from "./Actions";
@@ -7,13 +7,16 @@ import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
 
 import userAtom from "../atoms/userAtom";
-import { constSelector, useRecoilValue } from "recoil";
+import { constSelector, useRecoilState, useRecoilValue } from "recoil";
+import postsAtom from "../atoms/postsAtom";
 
 const Post = ({ post, postedBy }) => {
   const [liked, setLiked] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const currentUser = useRecoilValue(userAtom);
+  const [posts, setPosts] = useRecoilState(postsAtom);
+  const toast = useToast();
 
   useEffect(() => {
     const getUser = async () => {
@@ -50,11 +53,33 @@ const Post = ({ post, postedBy }) => {
       if (data.error) {
         console.log(data.error);
         // showToast("Error", data.error, "error");
+        toast({
+          title: "Error",
+          description: data.error,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
         return;
       }
       console.log("success");
+      setPosts(posts.filter((p) => p._id !== post._id));
+      toast({
+        title: "deleted post ",
+        description: "successful",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
       //   showToast("Success", "Post deleted", "success");
     } catch (error) {
+      toast({
+        title: "Error",
+        description: error,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
       console.log(error);
       //   showToast("Error", error.message, "error");
     }
